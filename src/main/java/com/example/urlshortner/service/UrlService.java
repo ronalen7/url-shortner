@@ -1,8 +1,8 @@
 package com.example.urlshortner.service;
 
+import com.example.urlshortner.config.AppConfig;
 import com.example.urlshortner.model.UrlMapping;
 import com.example.urlshortner.repository.UrlRepository;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
@@ -11,13 +11,14 @@ import java.util.Optional;
 @Service
 public class UrlService {
     private final UrlRepository urlRepository;
-    private final String BASE_URL = "http://short.ly/";
+    private final AppConfig appConfig;
+
     private final String ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    private final int SHORT_URL_LENGTH = 6;
     private final Random random = new Random();
 
-    public UrlService(UrlRepository urlRepository) {
+    public UrlService(UrlRepository urlRepository, AppConfig appConfig) {
         this.urlRepository = urlRepository;
+        this.appConfig = appConfig;
     }
 
     // Returns the full short URL (with BASE_URL) for the client
@@ -37,7 +38,7 @@ public class UrlService {
         urlMapping.setOriginalUrl(originalUrl);
         urlMapping.setShortCode(shortCode);
         urlRepository.save(urlMapping);
-        return BASE_URL + shortCode;
+        return appConfig.getBaseUrl() + shortCode;
 //        return shortCode;
     }
 
@@ -50,7 +51,8 @@ public class UrlService {
 
     private String generateShortCode() {
         StringBuilder shortCode = new StringBuilder();
-        for (int i = 0; i < SHORT_URL_LENGTH; i++) {
+        int length = appConfig.getShortCodeLength();
+        for (int i = 0; i < length; i++) {
             int index = random.nextInt(ALPHABET.length());
             shortCode.append(ALPHABET.charAt(index));
         }

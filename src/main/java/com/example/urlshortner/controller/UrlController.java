@@ -23,7 +23,7 @@ public class UrlController {
 
     // return a short url
     @PostMapping("/shorten")
-    public String shortenUrl(String originalUrl) {
+    public String shortenUrl(@RequestParam String originalUrl) {
         String shortUrl = urlService.shortenUrl(originalUrl);
         return shortUrl;
     }
